@@ -157,19 +157,19 @@ namespace SteveCadwallader.CodeMaid.Logic.Cleaning
                 _codeReorganizationManager.Reorganize(document);
             }
 
-            new UndoTransactionHelper(_package, $"CodeMaid Cleanup for '{document.Name}'").Run(
+            new UndoTransactionHelper(_package, string.Format(Resources.CodeMaidCleanupFor0, document.Name)).Run(
                 delegate
                 {
                     var cleanupMethod = FindCodeCleanupMethod(document);
                     if (cleanupMethod != null)
                     {
                         OutputWindowHelper.DiagnosticWriteLine($"CodeCleanupManager.Cleanup started for '{document.FullName}'");
-                        _package.IDE.StatusBar.Text = $"CodeMaid is cleaning '{document.Name}'...";
+                        _package.IDE.StatusBar.Text = string.Format(Resources.CodeMaidIsCleaning0, document.Name);
 
                         // Perform the set of configured cleanups based on the language.
                         cleanupMethod(document);
 
-                        _package.IDE.StatusBar.Text = $"CodeMaid cleaned '{document.Name}'.";
+                        _package.IDE.StatusBar.Text = string.Format(Resources.CodeMaidCleaned0, document.Name);
                         OutputWindowHelper.DiagnosticWriteLine($"CodeCleanupManager.Cleanup completed for '{document.FullName}'");
                     }
                 });
@@ -478,6 +478,10 @@ namespace SteveCadwallader.CodeMaid.Logic.Cleaning
             var textDocument = document.GetTextDocument();
 
             RunExternalFormatting(textDocument);
+            if (!document.IsExternal())
+            {
+                _usingStatementCleanupLogic.RemoveAndSortUsingStatements(textDocument);
+            }
 
             // Perform file header cleanup.
             _fileHeaderLogic.UpdateFileHeader(textDocument);

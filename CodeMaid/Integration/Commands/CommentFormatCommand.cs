@@ -1,6 +1,8 @@
 using EnvDTE;
 using SteveCadwallader.CodeMaid.Helpers;
 using SteveCadwallader.CodeMaid.Logic.Formatting;
+using SteveCadwallader.CodeMaid.Properties;
+using System.Threading.Tasks;
 
 namespace SteveCadwallader.CodeMaid.Integration.Commands
 {
@@ -9,26 +11,8 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
     /// </summary>
     internal sealed class CommentFormatCommand : BaseCommand
     {
-        #region Singleton
-
-        public static CommentFormatCommand Instance { get; private set; }
-
-        public static void Initialize(CodeMaidPackage package)
-        {
-            Instance = new CommentFormatCommand(package);
-            package.SettingsMonitor.Watch(s => s.Feature_CommentFormat, Instance.Switch);
-        }
-
-        #endregion Singleton
-
-        #region Fields
-
         private readonly CommentFormatLogic _commentFormatLogic;
         private readonly UndoTransactionHelper _undoTransactionHelper;
-
-        #endregion Fields
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentFormatCommand" /> class.
@@ -37,13 +21,30 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
         internal CommentFormatCommand(CodeMaidPackage package)
             : base(package, PackageGuids.GuidCodeMaidMenuSet, PackageIds.CmdIDCodeMaidCommentFormat)
         {
-            _undoTransactionHelper = new UndoTransactionHelper(package, "CodeMaid Format Comment");
+            _undoTransactionHelper = new UndoTransactionHelper(package, Resources.CodeMaidFormatComment);
             _commentFormatLogic = CommentFormatLogic.GetInstance(package);
         }
 
-        #endregion Constructors
+        /// <summary>
+        /// A singleton instance of this command.
+        /// </summary>
+        public static CommentFormatCommand Instance { get; private set; }
 
-        #region BaseCommand Methods
+        /// <summary>
+        /// Gets the active text document, otherwise null.
+        /// </summary>
+        private TextDocument ActiveTextDocument => Package.ActiveDocument?.GetTextDocument();
+
+        /// <summary>
+        /// Initializes a singleton instance of this command.
+        /// </summary>
+        /// <param name="package">The hosting package.</param>
+        /// <returns>A task.</returns>
+        public static async Task InitializeAsync(CodeMaidPackage package)
+        {
+            Instance = new CommentFormatCommand(package);
+            await package.SettingsMonitor.WatchAsync(s => s.Feature_CommentFormat, Instance.SwitchAsync);
+        }
 
         /// <summary>
         /// Called to update the current status of the command.
@@ -91,30 +92,19 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
 
                     if (foundComments)
                     {
-                        Package.IDE.StatusBar.Text = "CodeMaid finished formatting the comment.";
+                        Package.IDE.StatusBar.Text = Resources.CodeMaidFinishedFormattingTheComment;
                     }
                     else
                     {
                         Package.IDE.StatusBar.Text = string.Format(
                             foundComments
-                                ? "CodeMaid finished formatting the comments {0}."
-                                : "CodeMaid did not find a non-code comment {0} to reformat.",
-                            selection.IsEmpty ? "under the cursor" : "in the selection"
+                                ? Resources.CodeMaidFinishedFormattingTheComments0
+                                : Resources.CodeMaidDidNotFindANonCodeComment0ToReformat,
+                            selection.IsEmpty ? Resources.UnderTheCursor : Resources.InTheSelection
                         );
                     }
                 }
             }
         }
-
-        #endregion BaseCommand Methods
-
-        #region Private Properties
-
-        /// <summary>
-        /// Gets the active text document, otherwise null.
-        /// </summary>
-        private TextDocument ActiveTextDocument => Package.ActiveDocument?.GetTextDocument();
-
-        #endregion Private Properties
     }
 }

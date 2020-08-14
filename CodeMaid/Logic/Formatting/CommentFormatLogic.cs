@@ -1,7 +1,9 @@
 ﻿using EnvDTE;
 using SteveCadwallader.CodeMaid.Helpers;
 using SteveCadwallader.CodeMaid.Model.Comments;
+using SteveCadwallader.CodeMaid.Model.Comments.Options;
 using SteveCadwallader.CodeMaid.Properties;
+using System.Linq;
 
 namespace SteveCadwallader.CodeMaid.Logic.Formatting
 {
@@ -57,13 +59,24 @@ namespace SteveCadwallader.CodeMaid.Logic.Formatting
         public bool FormatComments(TextDocument textDocument, EditPoint start, EditPoint end)
         {
             bool foundComments = false;
-            int tabSize = CodeCommentHelper.GetTabSize(_package, textDocument);
+
+            var options = FormatterOptions
+                .FromSettings(Settings.Default)
+                .Set(o =>
+                {
+                    o.TabSize = textDocument.TabSize;
+                    o.IgnoreTokens = CodeCommentHelper
+                        .GetTaskListTokens(_package)
+                        .Concat(Settings.Default.Formatting_IgnoreLinesStartingWith.Cast<string>())
+                        .ToArray();
+                });
 
             while (start.Line <= end.Line)
             {
                 if (CodeCommentHelper.IsCommentLine(start))
                 {
-                    var comment = new CodeComment(start, tabSize);
+                    var comment = new CodeComment(start, options);
+
                     if (comment.IsValid)
                     {
                         comment.Format();
@@ -89,10 +102,10 @@ namespace SteveCadwallader.CodeMaid.Logic.Formatting
         }
 
         /// <summary>
-        /// Gets an instance of the <see cref="CommentFormatLogic" /> class.
+        /// Gets an instance of the <see cref="CommentFormatLogic"/> class.
         /// </summary>
         /// <param name="package">The hosting package.</param>
-        /// <returns>An instance of the <see cref="CommentFormatLogic" /> class.</returns>
+        /// <returns>An instance of the <see cref="CommentFormatLogic"/> class.</returns>
         internal static CommentFormatLogic GetInstance(CodeMaidPackage package)
         {
             return _instance ?? (_instance = new CommentFormatLogic(package));

@@ -1,22 +1,68 @@
 # Changelog
 
-## vNext (10.5)
+## vNext (11.2)
 
 These changes have not been released to the Visual Studio marketplace, but (if checked) are available in preview within the [CI build](http://vsixgallery.com/extension/4c82e17d-927e-42d2-8460-b473ac7df316/).
 
-- [x] Features
-  - [x] [#477](https://github.com/codecadwallader/codemaid/pull/477) - Digging: New radial progress bar - thanks [Jammer77](https://github.com/Jammer77)!
-  - [ ] [#506](https://github.com/codecadwallader/codemaid/pull/506) - Enable localization for Chinese - thanks [maikebing](https://github.com/maikebing)!
-  - [x] [#519](https://github.com/codecadwallader/codemaid/pull/519) - Simplify the code by removing unnecessary guids - thanks [heku](https://github.com/heku)!
-  - [x] [#525](https://github.com/codecadwallader/codemaid/pull/525) - Make all features switchable - thanks [heku](https://github.com/heku)!
+- [ ] Features
+  - [x] [#692](https://github.com/codecadwallader/codemaid/pull/692) - Remove and sort namespaces now supports XAML - thanks [Apflkuacha](https://github.com/Apflkuacha)!
 
-- [x] Fixes
-  - [x] [#479](https://github.com/codecadwallader/codemaid/pull/479) - Update XAML Styler integration mappings - thanks [grochocki](https://github.com/grochocki)!
-  - [x] [#496](https://github.com/codecadwallader/codemaid/pull/496) - Fix the .NET Framework minimum required version (which is v4.6)
+- [ ] Fixes
 
 ## Previous Releases
 
 These are the changes to each version that has been released to the Visual Studio marketplace.
+
+## 11.1
+
+**2019-11-03**
+
+- [x] Features
+  - [x] [#620](https://github.com/codecadwallader/codemaid/pull/620) - Formatting: Allow for individual tag formatting rules - thanks [willemduncan](https://github.com/willemduncan)!
+  - [x] [#665](https://github.com/codecadwallader/codemaid/pull/665) - Use image monikors so icons show up again when tool windows are small - thanks [Diermeier](https://github.com/Diermeier)!
+
+- [x] Fixes
+  - [x] [#647](https://github.com/codecadwallader/codemaid/pull/647) - Formatting: Fix magically added slashes - thanks [willemduncan](https://github.com/willemduncan)!
+  - [x] [#670](https://github.com/codecadwallader/codemaid/pull/670) - Options: Fix importing read-only config - thanks [Smartis2812](https://github.com/Smartis2812)!
+
+## 11.0
+
+**2019-03-23**
+
+- [x] Features
+  - [x] [#625](https://github.com/codecadwallader/codemaid/pull/625) - Use new AsyncPackage base class
+
+- [x] Fixes
+  - [x] [#613](https://github.com/codecadwallader/codemaid/pull/613) - Formatting: Avoid trailing comment line on self closing XML tag - thanks [bonimy](https://github.com/bonimy)!
+  - [x] [#632](https://github.com/codecadwallader/codemaid/issues/632) - Options: Fix XML encoding issue from resource translations
+
+## 10.6
+
+**2018-12-09**
+
+- [x] Features
+  - [x] [#582](https://github.com/codecadwallader/codemaid/pull/582) - Digging: New option to show item types (e.g. method return or property type) - thanks [GammaWolf](https://github.com/GammaWolf)!
+  - [x] [#593](https://github.com/codecadwallader/codemaid/pull/593) - Switching: Add .cshtml -> .cshtml.cs to defaults - thanks [derekmckinnon](https://github.com/derekmckinnon)!
+  - [x] [#594](https://github.com/codecadwallader/codemaid/pull/594) - Cleaning: New option to add blank lines before/after single-line fields - thanks [jasonjtyler](https://github.com/jasonjtyler)!
+  - [x] [#604](https://github.com/codecadwallader/codemaid/pull/604) - Turn on VS2019 support - thanks [digovc](https://github.com/digovc)!
+
+## 10.5
+
+**2018-06-09**
+
+- [x] Features
+  - [x] [#477](https://github.com/codecadwallader/codemaid/pull/477) - Digging: New radial progress bar - thanks [Jammer77](https://github.com/Jammer77)!
+  - [x] [#506](https://github.com/codecadwallader/codemaid/pull/506) - Enable localization for Chinese - thanks [maikebing](https://github.com/maikebing)!
+  - [x] [#519](https://github.com/codecadwallader/codemaid/pull/519) - Simplify the code by removing unnecessary guids - thanks [heku](https://github.com/heku)!
+  - [x] [#525](https://github.com/codecadwallader/codemaid/pull/525) - Make all features switchable - thanks [heku](https://github.com/heku)!
+  - [x] [#545](https://github.com/codecadwallader/codemaid/pull/545) - Ignore comment lines starting with certain prefixes - thanks [willemduncan](https://github.com/willemduncan)!
+  
+- [x] Fixes
+  - [x] [#479](https://github.com/codecadwallader/codemaid/pull/479) - Update XAML Styler integration mappings - thanks [grochocki](https://github.com/grochocki)!
+  - [x] [#496](https://github.com/codecadwallader/codemaid/pull/496) - Fix the .NET Framework minimum required version (which is v4.6)
+  - [x] [#541](https://github.com/codecadwallader/codemaid/pull/541) - Project file (.csproj) cleanup - thanks [heku](https://github.com/heku)!
+  - [x] [#546](https://github.com/codecadwallader/codemaid/pull/546) - Fix a setting that would leave a trailing white space when formatting comments - thanks [willemduncan](https://github.com/willemduncan)!
+  - [x] [#556](https://github.com/codecadwallader/codemaid/issues/556) - Partial fix reducing how long we will block waiting for a code model to be built.
 
 ## 10.4
 

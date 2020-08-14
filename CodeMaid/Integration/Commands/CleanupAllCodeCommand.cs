@@ -1,9 +1,11 @@
 using EnvDTE;
 using SteveCadwallader.CodeMaid.Helpers;
 using SteveCadwallader.CodeMaid.Logic.Cleaning;
+using SteveCadwallader.CodeMaid.Properties;
 using SteveCadwallader.CodeMaid.UI.Dialogs.CleanupProgress;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace SteveCadwallader.CodeMaid.Integration.Commands
@@ -13,20 +15,6 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
     /// </summary>
     internal sealed class CleanupAllCodeCommand : BaseCommand
     {
-        #region Singleton
-
-        public static CleanupAllCodeCommand Instance { get; private set; }
-
-        public static void Initialize(CodeMaidPackage package)
-        {
-            Instance = new CleanupAllCodeCommand(package);
-            package.SettingsMonitor.Watch(s => s.Feature_CleanupAllCode, Instance.Switch);
-        }
-
-        #endregion Singleton
-
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CleanupAllCodeCommand" /> class.
         /// </summary>
@@ -37,9 +25,32 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
             CodeCleanupAvailabilityLogic = CodeCleanupAvailabilityLogic.GetInstance(Package);
         }
 
-        #endregion Constructors
+        /// <summary>
+        /// A singleton instance of this command.
+        /// </summary>
+        public static CleanupAllCodeCommand Instance { get; private set; }
 
-        #region BaseCommand Members
+        /// <summary>
+        /// Gets the list of all project items.
+        /// </summary>
+        private IEnumerable<ProjectItem> AllProjectItems
+            => SolutionHelper.GetAllItemsInSolution<ProjectItem>(Package.IDE.Solution).Where(x => CodeCleanupAvailabilityLogic.CanCleanupProjectItem(x));
+
+        /// <summary>
+        /// Gets or sets the code cleanup availability logic.
+        /// </summary>
+        private CodeCleanupAvailabilityLogic CodeCleanupAvailabilityLogic { get; set; }
+
+        /// <summary>
+        /// Initializes a singleton instance of this command.
+        /// </summary>
+        /// <param name="package">The hosting package.</param>
+        /// <returns>A task.</returns>
+        public static async Task InitializeAsync(CodeMaidPackage package)
+        {
+            Instance = new CleanupAllCodeCommand(package);
+            await package.SettingsMonitor.WatchAsync(s => s.Feature_CleanupAllCode, Instance.SwitchAsync);
+        }
 
         /// <summary>
         /// Called to update the current status of the command.
@@ -58,12 +69,12 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
 
             if (!CodeCleanupAvailabilityLogic.IsCleanupEnvironmentAvailable())
             {
-                MessageBox.Show(@"Cleanup cannot run while debugging.",
-                                @"CodeMaid: Cleanup All Code",
+                MessageBox.Show(Resources.CleanupCannotRunWhileDebugging,
+                                Resources.CodeMaidCleanupAllCode,
                                 MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            else if (MessageBox.Show(@"Are you ready for CodeMaid to clean everything in the solution?",
-                                     @"CodeMaid: Confirmation for Cleanup All Code",
+            else if (MessageBox.Show(Resources.AreYouReadyForCodeMaidToCleanEverythingInTheSolution,
+                                     Resources.CodeMaidConfirmationForCleanupAllCode,
                                      MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No)
                          == MessageBoxResult.Yes)
             {
@@ -76,24 +87,5 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
                 }
             }
         }
-
-        #endregion BaseCommand Members
-
-        #region Private Properties
-
-        /// <summary>
-        /// Gets the list of all project items.
-        /// </summary>
-        private IEnumerable<ProjectItem> AllProjectItems
-        {
-            get { return SolutionHelper.GetAllItemsInSolution<ProjectItem>(Package.IDE.Solution).Where(x => CodeCleanupAvailabilityLogic.CanCleanupProjectItem(x)); }
-        }
-
-        /// <summary>
-        /// Gets or sets the code cleanup availability logic.
-        /// </summary>
-        private CodeCleanupAvailabilityLogic CodeCleanupAvailabilityLogic { get; set; }
-
-        #endregion Private Properties
     }
 }

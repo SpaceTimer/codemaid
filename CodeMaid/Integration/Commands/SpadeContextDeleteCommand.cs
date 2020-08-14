@@ -1,8 +1,10 @@
 ﻿using EnvDTE;
 using SteveCadwallader.CodeMaid.Helpers;
 using SteveCadwallader.CodeMaid.Model.CodeItems;
+using SteveCadwallader.CodeMaid.Properties;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SteveCadwallader.CodeMaid.Integration.Commands
 {
@@ -11,25 +13,7 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
     /// </summary>
     internal sealed class SpadeContextDeleteCommand : BaseCommand
     {
-        #region Singleton
-
-        public static SpadeContextDeleteCommand Instance { get; private set; }
-
-        public static void Initialize(CodeMaidPackage package)
-        {
-            Instance = new SpadeContextDeleteCommand(package);
-            Instance.Switch(on: true);
-        }
-
-        #endregion Singleton
-
-        #region Fields
-
         private readonly UndoTransactionHelper _undoTransactionHelper;
-
-        #endregion Fields
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpadeContextDeleteCommand" /> class.
@@ -38,12 +22,24 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
         internal SpadeContextDeleteCommand(CodeMaidPackage package)
             : base(package, PackageGuids.GuidCodeMaidMenuSet, PackageIds.CmdIDCodeMaidSpadeContextDelete)
         {
-            _undoTransactionHelper = new UndoTransactionHelper(package, "CodeMaid Delete Items");
+            _undoTransactionHelper = new UndoTransactionHelper(package, Resources.CodeMaidDeleteItems);
         }
 
-        #endregion Constructors
+        /// <summary>
+        /// A singleton instance of this command.
+        /// </summary>
+        public static SpadeContextDeleteCommand Instance { get; private set; }
 
-        #region BaseCommand Methods
+        /// <summary>
+        /// Initializes a singleton instance of this command.
+        /// </summary>
+        /// <param name="package">The hosting package.</param>
+        /// <returns>A task.</returns>
+        public static async Task InitializeAsync(CodeMaidPackage package)
+        {
+            Instance = new SpadeContextDeleteCommand(package);
+            await Instance.SwitchAsync(on: true);
+        }
 
         /// <summary>
         /// Called to update the current status of the command.
@@ -91,10 +87,6 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
             }
         }
 
-        #endregion BaseCommand Methods
-
-        #region Methods
-
         /// <summary>
         /// Determines if the specified item is a candidate for deletion.
         /// </summary>
@@ -104,7 +96,5 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
         {
             return !(codeItem is CodeItemRegion) || !((CodeItemRegion)codeItem).IsPseudoGroup;
         }
-
-        #endregion Methods
     }
 }

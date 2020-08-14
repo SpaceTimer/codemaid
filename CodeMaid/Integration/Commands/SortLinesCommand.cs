@@ -1,8 +1,10 @@
 ﻿using EnvDTE;
 using SteveCadwallader.CodeMaid.Helpers;
+using SteveCadwallader.CodeMaid.Properties;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TextSelection = EnvDTE.TextSelection;
 
 namespace SteveCadwallader.CodeMaid.Integration.Commands
@@ -12,25 +14,7 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
     /// </summary>
     internal sealed class SortLinesCommand : BaseCommand
     {
-        #region Singleton
-
-        public static SortLinesCommand Instance { get; private set; }
-
-        public static void Initialize(CodeMaidPackage package)
-        {
-            Instance = new SortLinesCommand(package);
-            package.SettingsMonitor.Watch(s => s.Feature_SortLines, Instance.Switch);
-        }
-
-        #endregion Singleton
-
-        #region Fields
-
         private readonly UndoTransactionHelper _undoTransactionHelper;
-
-        #endregion Fields
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SortLinesCommand" /> class.
@@ -39,12 +23,29 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
         internal SortLinesCommand(CodeMaidPackage package)
             : base(package, PackageGuids.GuidCodeMaidMenuSet, PackageIds.CmdIDCodeMaidSortLines)
         {
-            _undoTransactionHelper = new UndoTransactionHelper(package, "CodeMaid Sort");
+            _undoTransactionHelper = new UndoTransactionHelper(package, Resources.CodeMaidSort);
         }
 
-        #endregion Constructors
+        /// <summary>
+        /// A singleton instance of this command.
+        /// </summary>
+        public static SortLinesCommand Instance { get; private set; }
 
-        #region BaseCommand Methods
+        /// <summary>
+        /// Gets the active text document, otherwise null.
+        /// </summary>
+        private TextDocument ActiveTextDocument => Package.ActiveDocument?.GetTextDocument();
+
+        /// <summary>
+        /// Initializes a singleton instance of this command.
+        /// </summary>
+        /// <param name="package">The hosting package.</param>
+        /// <returns>A task.</returns>
+        public static async Task InitializeAsync(CodeMaidPackage package)
+        {
+            Instance = new SortLinesCommand(package);
+            await package.SettingsMonitor.WatchAsync(s => s.Feature_SortLines, Instance.SwitchAsync);
+        }
 
         /// <summary>
         /// Called to update the current status of the command.
@@ -71,19 +72,6 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
                 }
             }
         }
-
-        #endregion BaseCommand Methods
-
-        #region Properties
-
-        /// <summary>
-        /// Gets the active text document, otherwise null.
-        /// </summary>
-        private TextDocument ActiveTextDocument => Package.ActiveDocument?.GetTextDocument();
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Sorts the text within the specified text selection.
@@ -137,7 +125,5 @@ namespace SteveCadwallader.CodeMaid.Integration.Commands
                 textSelection.MoveToPoint(insertCursor, true);
             }
         }
-
-        #endregion Methods
     }
 }
